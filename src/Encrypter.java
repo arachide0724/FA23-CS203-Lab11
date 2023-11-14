@@ -1,6 +1,10 @@
+package Cipher;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Encrypter {
@@ -34,7 +38,26 @@ public class Encrypter {
      */
     public void encrypt(String inputFilePath, String encryptedFilePath) throws Exception {
         //TODO: Call the read method, encrypt the file contents, and then write to new file
-    }
+    	String line=readFile(inputFilePath);       
+    	String output="";
+    			for (int i=0; i<line.length(); i++){
+    				char let=line.charAt(i);
+    				for (int s=shift; s>0; s--) {
+    					if((int)let==90) {
+    						let=65;
+    					}else if((int)let<90 && (int)let>=65) {
+    						let+=1;
+    					}else if((int)let==122) {
+    						let=97;
+    					}else if((int)let<122 && (int)let>=97) {
+    						let+=1; 
+    					}
+    				}
+    				output+=let;
+    				
+    			}
+    			writeFile(output,encryptedFilePath);
+    		}
 
     /**
      * Decrypts the content of an encrypted file and writes the result to another file.
@@ -45,7 +68,26 @@ public class Encrypter {
      */
     public void decrypt(String messageFilePath, String decryptedFilePath) throws Exception {
         //TODO: Call the read method, decrypt the file contents, and then write to new file
-    }
+    	String line=readFile(messageFilePath);       
+    	String output="";
+			for (int i=0; i<line.length(); i++) {
+				char let=line.charAt(i);
+				for (int s=shift; s>0; s--){
+    					if((int)let==65) {
+    						let=90;
+    					}else if((int)let<=90 && (int)let>65) {
+    						let-=1;
+    					}else if((int)let==97) {
+    						let=122;
+    					}else if((int)let<=122 && (int)let>97) {
+    						let-=1;
+    					}
+    				}
+				output+=let;
+    				
+    			}
+    			writeFile(output,decryptedFilePath);
+    		}
 
     /**
      * Reads the content of a file and returns it as a string.
@@ -57,6 +99,13 @@ public class Encrypter {
     private static String readFile(String filePath) throws Exception {
         String message = "";
         //TODO: Read file from filePath
+        try (Scanner fileScanner=new Scanner(Paths.get(filePath))){
+    		while(fileScanner.hasNextLine()) {
+    			message+=fileScanner.nextLine()+"\n";
+    			}
+    		} catch (Exception e) {
+        		System.out.println("Error: "+e.toString());
+        	}
         return message;
     }
 
@@ -68,6 +117,12 @@ public class Encrypter {
      */
     private static void writeFile(String data, String filePath) {
         //TODO: Write to filePath
+    	try (PrintWriter output=new PrintWriter(filePath)){
+    		output.println(data);
+    		output.close();
+    	} catch (Exception e) {
+    		System.out.println("Error: "+e.toString());
+    	}
     }
 
     /**
